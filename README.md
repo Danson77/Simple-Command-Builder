@@ -9,11 +9,19 @@
 (but if you run docker just add docker-compose run --rm but idk why would you do that)
 
 
-
 #### You can easily adjust command and default parameters to your needs but mine I found optimal for daily use on my 32 core on 128GB RAM
 #### If you don't want it to crash start with two workers and then increase till crashes, each time you increase --timerange on Hypoeropt the worker's might crash so you have to lower (days) or decrease number of workers (its all about your ram)
 #####Same with backtesting will cause memory bottleneck and crash if you don't have enough ram for --timerange specified
 
 # !!! Before You start !!! You need to edit your location of files
+
+## For Backtest
 ## cd 'C:\Users\...\Freqtrade'
+## and Hypeorpt
 ## $customLoss = Get-CustomHyperoptLoss "C:\Users\...\Freqtrade\user_data\hyperopts"
+
+## And  edit for File distributer:
+### @{ "name" = "name"; "ip" = "       "; "username" = "          "; "destination_dir" = "/home/.../Servers/Freqtrade/user_data/strategies" },
+### $source_dir = "C:\Users\Broni\OneDrive\Servers\Freqtrade\user_data\strategies"
+### $strategy_distribution_file = "C:\Users\Broni\OneDrive\Servers\Freqtrade\user_data\strategy_distribution.json"
+###
