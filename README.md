@@ -1,4 +1,4 @@
-# Simple-Command-Builder
+# Simple-Command-Builder And File Uploader using ssh keys
 ## like:
 ###### docker-compose run --rm freqtrade backtesting --config user_data/config-nfiv7.json --data-format-ohlcv feather --timerange 20240201-20240202 --export trades --cache none
 
