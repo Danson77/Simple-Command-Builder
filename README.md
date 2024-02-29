@@ -22,6 +22,6 @@
 
 ## And  edit for File distributer:
 ### @{ "name" = "name"; "ip" = "       "; "username" = "          "; "destination_dir" = "/home/.../Servers/Freqtrade/user_data/strategies" },
-### $source_dir = "C:\Users\Broni\OneDrive\Servers\Freqtrade\user_data\strategies"
-### $strategy_distribution_file = "C:\Users\Broni\OneDrive\Servers\Freqtrade\user_data\strategy_distribution.json"
+### $source_dir = "C:\Users\...\Freqtrade\user_data\strategies"
+### $strategy_distribution_file = "C:\Users\...\Freqtrade\user_data\strategy_distribution.json"
 ###
