@@ -19,7 +19,7 @@
 ## - Only Hypeorpt - folder with custom IHyperOptLoss
 #### $customLoss = Get-CustomHyperoptLoss "C:\Users\...\Freqtrade\user_data\hyperopts"
 
-## - And edit/add information for File distributer - Add your files and give your server's names:
+## - File distributer - Add your server's names, file names, IP, user name, password:
 ##### @{ "name" = "name"; "ip" = "       "; "username" = "          "; "destination_dir" = "/home/.../Servers/Freqtrade/user_data/strategies" },
 
 ## - Edit strategy_distribution.json accordingly
