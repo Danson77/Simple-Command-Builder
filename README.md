@@ -11,7 +11,7 @@
 
 #### You can easily adjust command and default parameters to your needs but mine I found optimal for daily use on my 32 core on 128GB RAM
 #### If you don't want it to crash start with two workers and then increase till crashes, each time you increase --timerange on Hypoeropt the worker's might crash so you have to lower (days) or decrease number of workers (its all about your ram)
-#####Same with backtesting will cause memory bottleneck and crash if you don't have enough ram for --timerange specified
+##### Same with backtesting will cause memory bottleneck and crash if you don't have enough ram for --timerange specified
 
 # !!! Before You start !!! You need to edit your location of files
 
