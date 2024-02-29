@@ -21,6 +21,6 @@
 ## $customLoss = Get-CustomHyperoptLoss "C:\Users\...\Freqtrade\user_data\hyperopts"
 
 # And edit/add information for File distributer:
-### @{ "name" = "name"; "ip" = "       "; "username" = "          "; "destination_dir" = "/home/.../Servers/Freqtrade/user_data/strategies" },
-### $source_dir = "C:\Users\...\Freqtrade\user_data\strategies"
-### $strategy_distribution_file = "C:\Users\...\Freqtrade\user_data\strategy_distribution.json"
+##### @{ "name" = "name"; "ip" = "       "; "username" = "          "; "destination_dir" = "/home/.../Servers/Freqtrade/user_data/strategies" },
+##### $source_dir = "C:\Users\...\Freqtrade\user_data\strategies"
+##### $strategy_distribution_file = "C:\Users\...\Freqtrade\user_data\strategy_distribution.json"
