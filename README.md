@@ -30,4 +30,4 @@
 ##### $source_dir = "C:\Users\...\Freqtrade\user_data\strategies"
 ##### $strategy_distribution_file = "C:\Users\...\Freqtrade\user_data\strategy_distribution.json"
 
-
+# For Faster uplaoding without password use ssh keys
