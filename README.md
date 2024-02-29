@@ -15,12 +15,12 @@
 
 # !!! Before You start !!! You need to edit your location of files
 
-## For Backtest
+# For Backtest and Hypeorpt
 ## cd 'C:\Users\...\Freqtrade'
-## and Hypeorpt
+# Only Hypeorpt
 ## $customLoss = Get-CustomHyperoptLoss "C:\Users\...\Freqtrade\user_data\hyperopts"
 
-## And edit/add information for File distributer:
+# And edit/add information for File distributer:
 ### @{ "name" = "name"; "ip" = "       "; "username" = "          "; "destination_dir" = "/home/.../Servers/Freqtrade/user_data/strategies" },
 ### $source_dir = "C:\Users\...\Freqtrade\user_data\strategies"
 ### $strategy_distribution_file = "C:\Users\...\Freqtrade\user_data\strategy_distribution.json"
