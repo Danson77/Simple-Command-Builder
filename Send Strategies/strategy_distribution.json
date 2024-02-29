@@ -1,0 +1,7 @@
+{
+    "4-1 (DS_Green_5m | DS_CHA_5m)": ["DS_Green_5m.py", "DS_BB_RPB_MOD2.py", "DS_CHA_5m.py"],
+    "4-2 (DS_CHA_BB_RPB_MOD_CTT_1m | DS_cha6_1m)": ["DS_ClucHAnix_BB_RPB_MOD_CTT_1m.py", "DS_cha6_1m.py"],
+    "4-3 (DS_DC_5m | DS_TSL_5m | DS_BNC_5m)": ["DS_DC_5m.py", "DS_BB_RPB_TSL_RNG_5m.py", "DS_BNC_5m.py"],
+    "4-4 (DS_NFIV7_5m | DS_NASMAHO_5m)": ["DS_NFIV7_SMA_5m.py", "DS_NASMAHO_5m.py"],
+	"Ubuntu": ["DS_Green_5m.py", "DS_BB_RPB_MOD2.py", "DS_CHA_5m.py", "DS_ClucHAnix_BB_RPB_MOD_CTT_1m.py", "DS_cha6_1m.py", "DS_DC_5m.py", "DS_BB_RPB_TSL_RNG_5m.py", "DS_BNC_5m.py", "DS_NFIV7_SMA_5m.py", "DS_NASMAHO_5m.py"]
+}
