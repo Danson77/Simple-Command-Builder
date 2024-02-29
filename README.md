@@ -2,8 +2,8 @@
 
 
 #### For one-click using shortcut to launch this PowerShell script backtest, hyperopt, download data, to speed up the process of skipping each time copping and pasting or editing the commands in to terminal, colorus for aesthetics :)
-#### like:
-#### docker-compose run --rm freqtrade backtesting --config user_data/config-nfiv7.json --data-format-ohlcv feather --timerange 20240201-20240202 --export trades --cache none
+##### like:
+##### docker-compose run --rm freqtrade backtesting --config user_data/config-nfiv7.json --data-format-ohlcv feather --timerange 20240201-20240202 --export trades --cache none
 
 #### And even if you have a farm of bots you can automate uploading strategies with updated parameters to designated IP address using SSH with one click
 
