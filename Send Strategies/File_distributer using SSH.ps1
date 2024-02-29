@@ -1,10 +1,10 @@
 # Define your bots and their details
 $bots = @(
-    @{ "name" = "name"; "ip" = "       "; "username" = "          "; "destination_dir" = "/home/.../Servers/Freqtrade/user_data/strategies" },
-    @{ "name" = "name 2"; "ip" = "        "; "username" = "          "; "destination_dir" = "/home/.../Servers/Freqtrade/user_data/strategies" },
-    @{ "name" = "name 3"; "ip" = "       "; "username" = "          "; "destination_dir" = "/home/.../Freqtrade/user_data/strategies" },
-    @{ "name" = "name 4"; "ip" = "          "; "username" = "         "; "destination_dir" = "/home/..../Freqtrade/user_data/strategies" },
-	  @{ "name" = "name 5"; "ip" = "            "; "username" = "          "; "destination_dir" = "/media/..../Space/user_data/strategies" }
+    @{ "name" = "name 1"; "ip" = "       "; "username" = "         "; "destination_dir" = "/home/.../Servers/Freqtrade/user_data/strategies" },
+    @{ "name" = "name 2"; "ip" = "       "; "username" = "         "; "destination_dir" = "/home/.../Servers/Freqtrade/user_data/strategies" },
+    @{ "name" = "name 3"; "ip" = "       "; "username" = "         "; "destination_dir" = "/home/.../Freqtrade/user_data/strategies" },
+    @{ "name" = "name 4"; "ip" = "       "; "username" = "         "; "destination_dir" = "/home/..../Freqtrade/user_data/strategies" },
+    @{ "name" = "name 5"; "ip" = "       "; "username" = "         "; "destination_dir" = "/media/..../Space/user_data/strategies" }
 )
 $source_dir = "C:\Users\...\Freqtrade\user_data\strategies"
 $strategy_distribution_file = "X:\...\...\strategy_distribution.json"
