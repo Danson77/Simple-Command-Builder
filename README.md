@@ -6,7 +6,7 @@
 #### And even if you have a farm of bots you can automate uploading strategies with updated parameters to designated IP address using SSH with one click
 
 ## I made it for PowerShell and Linux, to use with docker run on windows and from environment in linux 
-######(but if you run docker just add docker-compose run --rm but idk why would you do that)
+###### (but if you run docker just add docker-compose run --rm but idk why would you do that)
 
 
 #### You can easily adjust command and default parameters to your needs but mine I found optimal for daily use on my 32 core on 128GB RAM
