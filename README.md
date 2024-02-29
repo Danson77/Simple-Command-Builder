@@ -14,6 +14,6 @@
 #### If you don't want it to crash start with two workers and then increase till crashes, each time you increase --timerange on Hypoeropt the worker's might crash so you have to lower (days) or decrease number of workers (its all about your ram)
 #####Same with backtesting will cause memory bottleneck and crash if you don't have enough ram for --timerange specified
 
-# !!! Before You start !!!
-## You need to edit your location of files
+# !!! Before You start !!! You need to edit your location of files
+## cd 'C:\Users\...\Freqtrade'
 ## $customLoss = Get-CustomHyperoptLoss "C:\Users\...\Freqtrade\user_data\hyperopts"
