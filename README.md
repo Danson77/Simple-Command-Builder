@@ -14,12 +14,12 @@
 #### If you don't want it to crash start with two workers and then increase till crashes, each time you increase --timerange on Hypoeropt the workers might crash so you have to lower (days) or decrease the number of workers (it's all about your ram and finding balance but I would aim for longer days)
 #### Same with backtesting will cause memory bottleneck and crash if you don't have enough RAM for --timerange specified
 
-## - For Backtest and Hypeorpt
+## - For Backtest and Hypeorpt - where the comand will start
 #### cd 'C:\Users\...\Freqtrade'
-## - Only Hypeorpt
+## - Only Hypeorpt - folder with custom IHyperOptLoss
 #### $customLoss = Get-CustomHyperoptLoss "C:\Users\...\Freqtrade\user_data\hyperopts"
 
-## - And edit/add information for File distributer (Add your files and give your server's names ):
+## - And edit/add information for File distributer - Add your files and give your server's names:
 ##### @{ "name" = "name"; "ip" = "       "; "username" = "          "; "destination_dir" = "/home/.../Servers/Freqtrade/user_data/strategies" },
 
 ## - Edit strategy_distribution.json accordingly
