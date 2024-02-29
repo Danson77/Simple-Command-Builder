@@ -5,7 +5,7 @@
 ##### like:
 ##### docker-compose run --rm freqtrade backtesting --config user_data/config-nfiv7.json --data-format-ohlcv feather --timerange 20240201-20240202 --export trades --cache none
 
-### And even if you have a farm of bots you can automate uploading strategies with updated parameters to designated IP address using SSH with one click (For Faster uplaoding without password use ssh keys)
+### If you have a farm of bots you can automate uploading strategies with updated parameters to designated IP address using SSH with one click (For Faster uplaoding without password use ssh keys)
 
 
 # !!! Before You Start!!! You need to edit the location of the files
