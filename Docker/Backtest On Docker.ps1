@@ -115,13 +115,10 @@ if ($useDefaultParameters) {
 # Define the Docker command as a script block for easier reuse
 $dockerCommand = {
     param($timerange, $timeframe, $useCache)
-    cd 'C:\Users\...\Freqtrade'
+    cd 'C:\Users\Broni\OneDrive\Servers\Freqtrade'
     # Construct the Docker command with or without the cache option
-    if ($useCache) {
-        $cmd = "docker-compose run --rm freqtrade backtesting --config user_data/config.json --data-format-ohlcv feather --export trades --timerange $timerange --timeframe $timeframe"
-    } else {
-        $cmd = "docker-compose run --rm freqtrade backtesting --config user_data/config.json --data-format-ohlcv feather --export trades --cache none --timerange $timerange --timeframe $timeframe"
-    }
+    $cacheOption = if ($useCache) { "" } else { "--cache none" }
+    $cmd = "docker-compose run --rm freqtrade backtesting --config user_data/config.json --data-format-ohlcv feather --export trades --timerange $timerange --timeframe $timeframe $cacheOption"
     Write-ActionLine "Running command: $cmd"
     Invoke-Expression $cmd
 }
