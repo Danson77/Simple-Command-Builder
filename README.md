@@ -20,7 +20,7 @@
 #### If you don't want it to crash start with two workers and then increase till crashes, each time you increase --timerange on Hypoeropt the workers might crash so you have to lower (days) or decrease the number of workers (it's all about your ram and finding balance but I would aim for longer days)
 #### Same with backtesting will cause memory bottleneck and crash if you don't have enough RAM for --timerange specified
 
-## - File distributer - Add your server's names, file names, IP, user name, password and file destination located on server, then location of files to uplaode:
+## - File distributer - Add your server's names, file names, IP, user name, password and file destination located on server, then location of files to uplaode (Edit strategy_distribution.json accordingly to File distributer):
 
 ##### @{ "name" = "name"; "ip" = "       "; "username" = "          "; "destination_dir" = "/home/.../Servers/Freqtrade/user_data/strategies" },
 -----------------------------------------------------------------------------------------
@@ -29,7 +29,7 @@
 ##### $strategy_distribution_file = "C:\Users\...\Freqtrade\user_data\strategy_distribution.json"
 -----------------------------------------------------------------------------------------
 
-## - Edit strategy_distribution.json accordingly to FIle distributer
+
 
 ## Create shortcut, for example:
 #####C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -File "C:\Users\...\Hyperopt.ps1"
