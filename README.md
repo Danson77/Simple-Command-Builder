@@ -30,4 +30,4 @@
 -----------------------------------------------------------------------------------------
 
 ## Create shortcut, for example:
-##### C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -File "C:\Users\...\Hyperopt.ps1"
+###### C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -File "C:\Users\...\Hyperopt.ps1"
