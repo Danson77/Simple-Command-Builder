@@ -1,8 +1,8 @@
 # Define default parameters
 $defaultTimerange = "20231001-20240103"
-$defaultSpaces = "sell"
-$defaultEpochs = "10000"
-$defaultHyperoptLoss = "ProfitSquareSortinoSpringEfficiencyHyperOptLoss"
+$defaultSpaces = "stoploss trailing"
+$defaultEpochs = "1000"
+$defaultHyperoptLoss = "PSSEv2"
 $defaultWorkers = "8"
 
 # Helper functions for colored messages
@@ -46,7 +46,7 @@ function ChooseParameterMode {
                 return $false
             }
             'custom' {
-                $customLoss = Get-CustomHyperoptLoss "C:\Users\...\Freqtrade\user_data\hyperopts"
+                $customLoss = Get-CustomHyperoptLoss "C:\Users\Broni\OneDrive\Servers\Freqtrade\user_data\hyperopts"
                 if ($customLoss) {
                     Write-Tell "Custom hyperopt loss selected."
                     $global:defaultHyperoptLoss = $customLoss
@@ -80,7 +80,7 @@ function Get-Spaces {
     $validSpaces = @("all", "buy", "sell", "roi", "stoploss", "trailing", "trades", "protection", "default")
     do {
         Write-ActionLine "Choose spaces (can choose multiple, separated by space):"
-        Write-WarningLine "all, buy, sell, roi, stoploss, trailing, trades, protection, default"
+        Write-WarningLine "buy, sell, stoploss, trailing, roi, trades, protection, all, default"
         $spaces = (Read-Host "Enter your choice").ToLower()  # Convert input to lowercase
         $spaceList = $spaces -split ' '
         
@@ -215,7 +215,7 @@ if ($useDefaultParameters) {
     # Choose hyperopt loss function
     $hyperoptLoss = Get-HyperoptLoss
     if ($hyperoptLoss -eq "Custom") {
-        $customLoss = Get-CustomHyperoptLoss "C:\Users\...\Freqtrade\user_data\hyperopts"
+        $customLoss = Get-CustomHyperoptLoss "C:\Users\Broni\OneDrive\Servers\Freqtrade\user_data\hyperopts"
         if ($customLoss) {
             $hyperoptLoss = $customLoss
         } else {
@@ -232,8 +232,8 @@ if ($useDefaultParameters) {
 $dockerCommand = {
     param($timerange, $spaces, $epochs, $hyperoptLoss, $workers)
     
-    cd 'C:\Users\...\Freqtrade'
-    $cmd = "docker-compose run --rm freqtrade hyperopt --config user_data/config.json --timeframe 5m --data-format-ohlcv feather -j $workers --hyperopt-loss $hyperoptLoss --spaces $spaces --timerange $timerange -e $epochs"
+    cd 'C:\Users\Broni\OneDrive\Servers\Freqtrade'
+    $cmd = "docker-compose run --rm freqtrade hyperopt --config user_data/config.json --data-format-ohlcv feather -j $workers --hyperopt-loss $hyperoptLoss --spaces $spaces --timerange $timerange -e $epochs"
     Write-ActionLine "Running command: $cmd"
     Invoke-Expression $cmd
 }
@@ -265,7 +265,7 @@ do {
                 $epochs = Get-Epochs
                 $hyperoptLoss = Get-HyperoptLoss
                 if ($hyperoptLoss -eq "Custom") {
-                    $customLoss = Get-CustomHyperoptLoss "C:\Users\...\Freqtrade\user_data\hyperopts"
+                    $customLoss = Get-CustomHyperoptLoss "C:\Users\Broni\OneDrive\Servers\Freqtrade\user_data\hyperopts"
                     if ($customLoss) {
                         $hyperoptLoss = $customLoss
                     } else {
