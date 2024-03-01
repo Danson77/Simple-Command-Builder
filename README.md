@@ -11,7 +11,7 @@
 # !!! Before You Start !!! You need to edit few lines
 
 ## - For Backtest and Hypeorpt - where the comand will start
-##### cd 'C:\Users\...\Freqtrade'
+###### cd 'C:\Users\...\Freqtrade'
 -----------------------------------------------------------------------------------------
 ## - Only Hypeorpt - folder with custom IHyperOptLoss
 ###### $customLoss = Get-CustomHyperoptLoss "C:\Users\...\Freqtrade\user_data\hyperopts"
