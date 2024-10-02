@@ -3,7 +3,8 @@
 ![Screenshot 2024-03-01 113020](https://github.com/Danson77/Simple-Command-Builder/assets/19780111/8baabd79-c786-4477-9ab0-a7dc855c5db5)
 #### For one click using shortcut to launch this PowerShell script backtest, hyperopt, download data, to speed up the process of skipping each time copping and pasting or editing the commands into terminal, colours for aesthetics :)
 -----------------------------------------------------------------------------------------
-### If you have a farm of bots you can automate uploading strategies with updated parameters to designated IP address using SSH with one click (For Faster uploading without a password use ssh keys)
+### If you have a farm of bots you can automate uploading strategies with updated parameters to designated IP address using SSH with one click
+(For Faster uploading without a password use ssh keys)
 
 
 # !!! Before You Start !!! You need to edit few lines
