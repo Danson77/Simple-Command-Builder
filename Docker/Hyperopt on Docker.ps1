@@ -1,9 +1,9 @@
-# Define default parameters
-$defaultTimerange = "20231001-20240103"
-$defaultSpaces = "stoploss trailing"
-$defaultEpochs = "1000"
-$defaultHyperoptLoss = "PSSEv2"
-$defaultWorkers = "8"
+# Define default parameters 20231001-2024010320240102-20240103
+$defaultTimerange = "20240601-20241001"
+$defaultSpaces = "buy"
+$defaultEpochs = "10000"
+$defaultHyperoptLoss = "RECv"
+$defaultWorkers = "10"
 
 # Helper functions for colored messages
 function Write-ErrorLine {
@@ -121,6 +121,18 @@ function Get-Workers {
     } while ($true)
 }
 
+
+# Function to get the number of workers from the user with default value
+function Get-WorkersOrDefault {
+    $workers = Get-Workers
+    if (-not $workers) {
+        Write-Tell "Using default number of workers: $defaultWorkers"
+        return $defaultWorkers
+    } else {
+        return $workers
+    }
+}
+
 # Function to get the hyperopt-loss type from the user
 function Get-HyperoptLoss {
     do {
@@ -187,30 +199,22 @@ function Get-CustomHyperoptLoss {
     }
 }
 
-# Function to get the number of workers from the user with default value
-function Get-WorkersOrDefault {
-    $workers = Get-Workers
-    if (-not $workers) {
-        Write-Tell "Using default number of workers: $defaultWorkers"
-        return $defaultWorkers
-    } else {
-        return $workers
-    }
-}
-
 # Implementation of default parameters choice with dynamic color output based on choice
 $useDefaultParameters = ChooseParameterMode
 if ($useDefaultParameters) {
     $timerange = $defaultTimerange
     $spaces = $defaultSpaces
     $epochs = $defaultEpochs
+	$workers = $defaultWorkers
     $hyperoptLoss = $defaultHyperoptLoss
-    $workers = $defaultWorkers
 } else {
     # Get parameters from the user
     $timerange = Get-Timerange
     $spaces = Get-Spaces
     $epochs = Get-Epochs
+	
+	# Get the number of workers
+    $workers = Get-WorkersOrDefault
 	
     # Choose hyperopt loss function
     $hyperoptLoss = Get-HyperoptLoss
@@ -223,23 +227,20 @@ if ($useDefaultParameters) {
             $hyperoptLoss = $defaultHyperoptLoss
         }
     }
-    
-    # Get the number of workers
-    $workers = Get-WorkersOrDefault
 }
 
-# Define the Docker command as a script block for easier reuse
+# Define the Docker command as a script block for easier reuse     --enable-position-stacking --disable-max-market-positions --random-state 29440
 $dockerCommand = {
     param($timerange, $spaces, $epochs, $hyperoptLoss, $workers)
     
     cd 'C:\Users\Broni\OneDrive\Servers\Freqtrade'
-    $cmd = "docker-compose run --rm freqtrade hyperopt --config user_data/config.json --data-format-ohlcv feather -j $workers --hyperopt-loss $hyperoptLoss --spaces $spaces --timerange $timerange -e $epochs"
+    $cmd = "docker-compose run --name Hyperopt --rm freqtrade hyperopt --config user_data/config.json --data-format-ohlcv feather --timerange $timerange --spaces $spaces -e $epochs -j $workers --hyperopt-loss $hyperoptLoss"
     Write-ActionLine "Running command: $cmd"
     Invoke-Expression $cmd
 }
 
 # Initially run the Docker command
-& $dockerCommand -timerange $timerange -spaces $spaces -epochs $epochs -hyperoptLoss $hyperoptLoss -workers $workers
+& $dockerCommand -timerange $timerange -spaces $spaces -epochs $epochs -workers $workers -hyperoptLoss $hyperoptLoss
 
 # Loop for user input
 $exitLoop = $false
@@ -249,7 +250,7 @@ do {
     switch ($input) {
         'retry' {
             Write-Tell "Retrying with the same parameters..."
-            & $dockerCommand -timerange $timerange -spaces $spaces -epochs $epochs -hyperoptLoss $hyperoptLoss -workers $workers
+            & $dockerCommand -timerange $timerange -spaces $spaces -epochs $epochs -workers $workers -hyperoptLoss $hyperoptLoss
         }
         'new' {
             $useDefaultParameters = ChooseParameterMode
@@ -276,7 +277,7 @@ do {
                 $workers = Get-WorkersOrDefault
             }
             Write-WarningLine "Running command with new parameters..."
-            & $dockerCommand -timerange $timerange -spaces $spaces -epochs $epochs -hyperoptLoss $hyperoptLoss -workers $workers
+            & $dockerCommand -timerange $timerange -spaces $spaces -epochs $epochs -workers $workers -hyperoptLoss $hyperoptLoss
         }
         'exit' {
             Write-InfoLine "Exiting..."
