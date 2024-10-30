@@ -1,7 +1,10 @@
 # Define default parameters
-$defaultTimerange = "20220601-20240203"
+$defaultTimerange = "20240601-20241001"
 $defaultTimeframe = "5m"
-$defaultUseCache = $true
+$defaultUseCache = $false
+$defaultDisableMaxMarketPositions = $false
+$defaultEnablePositionStacking = $false
+
 # Helper functions for colored messages
 function Write-ErrorLine {
     param([string]$Message)
@@ -23,6 +26,7 @@ function Write-Tell {
     param([string]$Message)
     Write-Host $Message -ForegroundColor Blue
 }
+
 # ChooseParameterMode function
 function ChooseParameterMode {
     do {
@@ -43,6 +47,7 @@ function ChooseParameterMode {
         }
     } while ($true)
 }
+
 # Function to get timerange input from the user
 function Get-Timerange {
     do {
@@ -55,21 +60,14 @@ function Get-Timerange {
         }
     } while ($true)
 }
+
 # Improved Get-Timeframe function with nicer user interaction
 function Get-Timeframe {
-    # List of allowed timeframes for selection
     $allowedTimeframes = @('1m', '5m', '15m', '1h', '4h', '1d')
-    
-    # Loop until valid input is received
     do {
-        # Displaying the prompt with available options
         Write-ActionLine "Enter one of the Timeframe (e.g. $($allowedTimeframes -join ', '))"
         $input = Read-Host
-        
-        # Convert user input to lowercase to ensure case-insensitive comparison
         $timeframe = $input.ToLower()
-        
-        # Check if the converted lowercase input is within the allowed timeframes
         if ($allowedTimeframes -contains $timeframe) {
             Write-WarningLine "You've selected the timeframe: $timeframe"
             return $timeframe
@@ -78,22 +76,42 @@ function Get-Timeframe {
         }
     } while ($true)
 }
-# Improved Get-CacheOption function with enhanced user interaction
+
+# Get-CacheOption function
 function Get-CacheOption {
     do {
-        # Prompt the user with a clear question
-        Write-ActionLine "Do you want to disable cache? (Yes/No)"
+        Write-ActionLine "Do you want to enabled cache? (Yes/No)"
         $choice = Read-Host "Choice"
-
-        # Process the user's choice
         switch ($choice.ToLower().Trim()) {
             'yes' {
+                Write-WarningLine "Cache will be enabled."
+                return $true
+            }
+            'no' {
                 Write-Tell "Cache will be disabled."
                 return $false
             }
-            'no' {
-                Write-WarningLine "Cache will be enabled."
+
+            default {
+                Write-ErrorLine "Invalid input. Please enter 'Yes' or 'No'."
+            }
+        }
+    } while ($true)
+}
+
+# Function to get option for --disable-max-market-positions
+function Get-DisableMaxMarketPositionsOption {
+    do {
+        Write-ActionLine "Do you want to disable max market positions? (Yes/No)"
+        $choice = Read-Host
+        switch ($choice.ToLower().Trim()) {
+            'yes' {
+                Write-Tell "Max open trades will be disabled."
                 return $true
+            }
+            'no' {
+                Write-WarningLine "Max open trades will remain enabled."
+                return $false
             }
             default {
                 Write-ErrorLine "Invalid input. Please enter 'Yes' or 'No'."
@@ -101,38 +119,72 @@ function Get-CacheOption {
         }
     } while ($true)
 }
+
+# Function to get option for --enable-position-stacking
+function Get-EnablePositionStackingOption {
+    do {
+        Write-ActionLine "Do you want to enable position stacking? (Yes/No)"
+        $choice = Read-Host
+        switch ($choice.ToLower().Trim()) {
+            'yes' {
+                Write-Tell "Position stacking will be enabled."
+                return $true
+            }
+            'no' {
+                Write-WarningLine "Position stacking will remain disabled."
+                return $false
+            }
+            default {
+                Write-ErrorLine "Invalid input. Please enter 'Yes' or 'No'."
+            }
+        }
+    } while ($true)
+}
+
 # Main script execution
 $useDefaultParameters = ChooseParameterMode
 if ($useDefaultParameters) {
     $timerange = $defaultTimerange
     $timeframe = $defaultTimeframe
     $useCache = $defaultUseCache
+    $disableMaxMarketPositions = $defaultDisableMaxMarketPositions
+    $enablePositionStacking = $defaultEnablePositionStacking
 } else {
     $timerange = Get-Timerange
     $timeframe = Get-Timeframe
     $useCache = Get-CacheOption
+    $disableMaxMarketPositions = Get-DisableMaxMarketPositionsOption
+    $enablePositionStacking = Get-EnablePositionStackingOption
 }
-# Define the Docker command as a script block for easier reuse
+
+# Define the Docker command as a script block
 $dockerCommand = {
-    param($timerange, $timeframe, $useCache)
+    param($timerange, $timeframe, $useCache, $disableMaxMarketPositions, $enablePositionStacking)
     cd 'C:\Users\Broni\OneDrive\Servers\Freqtrade'
+
     # Construct the Docker command with or without the cache option
     $cacheOption = if ($useCache) { "" } else { "--cache none" }
-    $cmd = "docker-compose run --rm freqtrade backtesting --config user_data/config.json --data-format-ohlcv feather --export trades --timerange $timerange --timeframe $timeframe $cacheOption"
+    $maxMarketPositionsOption = if ($disableMaxMarketPositions) { "--disable-max-market-positions" } else { "" }
+    $positionStackingOption = if ($enablePositionStacking) { "--enable-position-stacking" } else { "" }
+
+    $cmd = "docker-compose run --name Backtest --rm freqtrade backtesting --config user_data/config.json --data-format-ohlcv feather --export trades --timerange $timerange --timeframe $timeframe $cacheOption $maxMarketPositionsOption $positionStackingOption"
+    
     Write-ActionLine "Running command: $cmd"
     Invoke-Expression $cmd
 }
+
 # Initially run the Docker command
-& $dockerCommand -timerange $timerange -timeframe $timeframe -useCache $useCache
+& $dockerCommand -timerange $timerange -timeframe $timeframe -useCache $useCache -disableMaxMarketPositions $disableMaxMarketPositions -enablePositionStacking $enablePositionStacking
+
 # User input loop
 $exitLoop = $false
 do {
     Write-ActionLine "Type 'retry' to use same parameters, 'new' to enter new parameters, or 'exit' to close this window"
-    $input = Read-Host # Capture user input after displaying the message
+    $input = Read-Host
     switch ($input) {
         'retry' {
             Write-Tell "Retrying with the same parameters..."
-            & $dockerCommand -timerange $timerange -timeframe $timeframe -useCache $useCache
+            & $dockerCommand -timerange $timerange -timeframe $timeframe -useCache $useCache -disableMaxMarketPositions $disableMaxMarketPositions -enablePositionStacking $enablePositionStacking
         }
         'new' {
             $useDefaultParameters = ChooseParameterMode
@@ -140,21 +192,24 @@ do {
                 $timerange = $defaultTimerange
                 $timeframe = $defaultTimeframe
                 $useCache = $defaultUseCache
+                $disableMaxMarketPositions = $defaultDisableMaxMarketPositions
+                $enablePositionStacking = $defaultEnablePositionStacking
             } else {
                 $timerange = Get-Timerange
                 $timeframe = Get-Timeframe
                 $useCache = Get-CacheOption
+                $disableMaxMarketPositions = Get-DisableMaxMarketPositionsOption
+                $enablePositionStacking = Get-EnablePositionStackingOption
             }
             Write-WarningLine "Running command with new parameters..."
-            & $dockerCommand -timerange $timerange -timeframe $timeframe -useCache $useCache
+            & $dockerCommand -timerange $timerange -timeframe $timeframe -useCache $useCache -disableMaxMarketPositions $disableMaxMarketPositions -enablePositionStacking $enablePositionStacking
         }
         'exit' {
             Write-InfoLine "Exiting..."
-            $exitLoop = $true # Set the flag to true to exit the loop
-            break
+            $exitLoop = $true
         }
         default {
             Write-ErrorLine "Invalid input. Please type 'retry', 'new', or 'exit'."
         }
     }
-} while (-not $exitLoop) # Loop until $exitLoop is true
+} while (-not $exitLoop)
