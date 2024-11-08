@@ -1,15 +1,15 @@
 # Simple-Command-Builder And File Uploader using ssh keys
 ## I made it for PowerShell and Linux, to use with docker run on Windows and from an environment in Linux
 ![Screenshot 2024-03-01 113020](https://github.com/Danson77/Simple-Command-Builder/assets/19780111/8baabd79-c786-4477-9ab0-a7dc855c5db5)
-#### For one click using shortcut to launch this PowerShell script backtest, hyperopt, download data, to speed up the process of skipping each time copping and pasting or editing the commands into terminal, colours for aesthetics :)
+#### For one click using a shortcut to launch this PowerShell script backtest, hyperopt, download data, to speed up the process of skipping each time copping and pasting or editing the commands into terminal, colours for aesthetics :)
 -----------------------------------------------------------------------------------------
 ### If you have a farm of bots you can automate uploading strategies with updated parameters to designated IP address using SSH with one click
 (For Faster uploading without a password use ssh keys)
 
 
-# !!! Before You Start !!! You need to edit few lines
+# !!! Before You Start !!! You need to edit a few lines
 
-## - For Backtest and Hypeorpt - where the comand will start
+## - For Backtest and Hyperopt - where the command will start
 ###### cd 'C:\Users\...\Freqtrade'
 -----------------------------------------------------------------------------------------
 ## - Only Hypeorpt - folder with custom IHyperOptLoss
@@ -28,6 +28,6 @@
 ###### $strategy_distribution_file = "C:\Users\...\Freqtrade\user_data\strategy_distribution.json"
 -----------------------------------------------------------------------------------------
 
-## Create shortcut, for example:
+## Create a shortcut, for example:
 ###### C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -File "C:\Users\...\Hyperopt.ps1"
 -----------------------------------------------------------------------------------------
