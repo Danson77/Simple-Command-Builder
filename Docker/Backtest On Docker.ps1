@@ -1,5 +1,5 @@
 # Define default parameters
-$defaultTimerange = "20240601-20241001"
+$defaultTimerange = "20240101-20241001"
 $defaultTimeframe = "5m"
 $defaultUseCache = $false
 $defaultDisableMaxMarketPositions = $false
@@ -30,7 +30,7 @@ function Write-Tell {
 # ChooseParameterMode function
 function ChooseParameterMode {
     do {
-        Write-WarningLine "Do you want to use default parameters? (Yes/No):"
+        Write-WarningLine "Do you want to use default parameters? (Yes/No): 20240101-20241001, 5m, No-Cache"
         $choice = Read-Host
         switch ($choice.ToLower().Trim()) {
             'yes' {
@@ -160,7 +160,7 @@ if ($useDefaultParameters) {
 # Define the Docker command as a script block
 $dockerCommand = {
     param($timerange, $timeframe, $useCache, $disableMaxMarketPositions, $enablePositionStacking)
-    cd 'C:\Users\Broni\OneDrive\Servers\Freqtrade'
+    cd 'M:\Freqtrade\'
 
     # Construct the Docker command with or without the cache option
     $cacheOption = if ($useCache) { "" } else { "--cache none" }
