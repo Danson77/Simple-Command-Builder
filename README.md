@@ -12,7 +12,7 @@
 ## - For Backtest and Hyperopt - where the command will start
 ###### cd 'C:\Users\...\Freqtrade'
 -----------------------------------------------------------------------------------------
-## - Only Hypeorpt - folder with custom IHyperOptLoss
+## - Only Hyperopt - folder with custom IHyperOptLoss
 ###### $customLoss = Get-CustomHyperoptLoss "C:\Users\...\Freqtrade\user_data\hyperopts"
 -----------------------------------------------------------------------------------------
 #### You can easily adjust command and default parameters to your needs but mine I found optimal for daily use on my 32 core on 128GB RAM
