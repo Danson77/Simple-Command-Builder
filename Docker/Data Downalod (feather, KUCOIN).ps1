@@ -1,7 +1,7 @@
 # Define default parameters
-$defaultTimerange = "20220101-20240203"
-$defaultTimeframes = "1m 5m 1h"
-$defaultIncludeInactivePairs = $true  # Set to $true to include inactive pairs, $false otherwise
+$defaultTimerange = "20240101-20241100"
+$defaultTimeframes = "1m 5m 15m 1h"
+$defaultIncludeInactivePairs = $false  # Set to $true to include inactive pairs, $false otherwise
 # Helper functions for colored messages
 function Write-ErrorLine {
     param([string]$Message)
@@ -41,9 +41,17 @@ function ChooseParameterMode {
         Write-WarningLine "Do you want to use default parameters? (Yes/No):"
         $choice = Read-Host
         switch ($choice.ToLower().Trim()) {
+            'y' {
+				Write-Tell "Default parameters selected."
+                return $true
+            }
             'yes' {
 				Write-Tell "Default parameters selected."
                 return $true
+            }
+            'n' {
+                Write-Tell "Custom parameters selected."
+                return $false
             }
             'no' {
                 Write-Tell "Custom parameters selected."
@@ -57,12 +65,11 @@ function ChooseParameterMode {
 }
 function Get-Timeframes {
     # List of allowed timeframes for selection
-    $allowedTimeframes = @('1m', '5m', '15m', '1h', '4h', '1d')
-
+    $allowedTimeframes = @('1m', '5m', '15m','30m', '1h', '2h', '4h', '6h', '12h','1d')
     # Loop until valid input is received
     do {
         # Displaying the prompt with available options
-        Write-ActionLine "Enter the Timeframes (separated by spaces, e.g., 1m 5m 1h):"
+        Write-ActionLine "Enter the Timeframes (separated by spaces, e.g., 1m 5m 15m 30m 1h 2h 4h 6h 12h 1d):"
         $input = Read-Host
         
         # Convert user input to lowercase and split by spaces to handle multiple timeframes
@@ -94,9 +101,17 @@ function Get-IncludeInactivePairs {
         $choice = $choice.ToLower().Trim()
         
         switch ($choice) {
+            'y' {
+                Write-Tell "Including inactive pairs."
+                return $true
+            }
             'yes' {
                 Write-Tell "Including inactive pairs."
                 return $true
+            }
+            'n' {
+                Write-Tell "Excluding inactive pairs."
+                return $false
             }
             'no' {
                 Write-Tell "Excluding inactive pairs."
@@ -126,9 +141,9 @@ if ($useDefaultParameters) {
 $dockerCommand = {
     param($timerange, $timeframes, $includeInactivePairs)
     
-    cd 'C:\Users\...\Freqtrade'
+    cd 'K:\Freqtrade\'
     $inactivePairsFlag = if ($includeInactivePairs) { "--include-inactive-pairs" } else { "" }
-    $cmd = "docker-compose run --rm freqtrade download-data --exchange kucoin --data-format-ohlcv feather $inactivePairsFlag --timerange $timerange --timeframes $timeframes"
+    $cmd = "docker-compose run --name DataDownload --rm freqtrade download-data --exchange kucoin --config user_data/config-1.json --data-format-ohlcv feather $inactivePairsFlag --prepend --timerange $timerange --timeframes $timeframes"
     Write-ActionLine "Running command: $cmd"
     Invoke-Expression $cmd
 }
