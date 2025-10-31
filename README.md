@@ -1,5 +1,6 @@
 # Simple-Command-Builder And File Uploader using ssh keys
 ## I made it for PowerShell and Linux, to use with docker run on Windows and from an environment in Linux
+## OLD photo
 ![Screenshot 2024-03-01 113020](https://github.com/Danson77/Simple-Command-Builder/assets/19780111/8baabd79-c786-4477-9ab0-a7dc855c5db5)
 #### For one click using a shortcut to launch this PowerShell script backtest, hyperopt, and download data, to speed up the process of skipping each time copping and pasting or editing the commands into terminal by having either set up default parameters or quickly choosing options that saves copying and pasting, colours for aesthetics :)
 -----------------------------------------------------------------------------------------
