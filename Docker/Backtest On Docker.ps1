@@ -1,49 +1,62 @@
 # Define default parameters
-$defaultTimerange = "20240101-20241001"
-$defaultTimeframe = "5m"
+$defaultTimerange = "20240101-20250601"
 $defaultUseCache = $false
-$defaultDisableMaxMarketPositions = $false
-$defaultEnablePositionStacking = $false
 
 # Helper functions for colored messages
-function Write-ErrorLine {
-    param([string]$Message)
-    Write-Host $Message -ForegroundColor Red
-}
-function Write-InfoLine {
-    param([string]$Message)
-    Write-Host $Message -ForegroundColor White
-}
-function Write-WarningLine {
-    param([string]$Message)
-    Write-Host $Message -ForegroundColor DarkYellow
-}
-function Write-ActionLine {
-    param([string]$Message)
-    Write-Host $Message -ForegroundColor Green
-}
-function Write-Tell {
-    param([string]$Message)
-    Write-Host $Message -ForegroundColor Blue
-}
+function Write-ErrorLine { param([string]$Message); Write-Host $Message -ForegroundColor Red }
+function Write-InfoLine { param([string]$Message); Write-Host $Message -ForegroundColor White }
+function Write-WarningLine { param([string]$Message); Write-Host $Message -ForegroundColor DarkYellow }
+function Write-ActionLine { param([string]$Message); Write-Host $Message -ForegroundColor Green }
+function Write-Tell { param([string]$Message); Write-Host $Message -ForegroundColor Blue }
 
-# ChooseParameterMode function
-function ChooseParameterMode {
+# Function to choose a backtest config# Function to choose a backtest config
+function Select-BacktestOrder {
+    # Ensure script is running from the correct directory
+    $expectedPath = "K:\Freqtrade"
+    if ((Get-Location).Path -ne $expectedPath) {
+        Write-WarningLine "Switching to expected working directory: $expectedPath"
+        try {
+            Set-Location -Path $expectedPath
+        } catch {
+            Write-ErrorLine "Failed to change directory to $expectedPath. $_"
+            return $null
+        }
+    }
+
+    $configFolder = "user_data"
+    if (-not (Test-Path $configFolder)) {
+        Write-ErrorLine "Directory '$configFolder' does not exist. Current path: $(Get-Location)"
+        return $null
+    }
+
+    $configs = Get-ChildItem -Path $configFolder -Filter "config-*.json" | Sort-Object Name
+    if ($configs.Count -eq 0) {
+        Write-ErrorLine "No config-*.json files found in '$configFolder'."
+        return $null
+    }
+
     do {
-        Write-WarningLine "Do you want to use default parameters? (Yes/No): 20240101-20241001, 5m, No-Cache"
-        $choice = Read-Host
-        switch ($choice.ToLower().Trim()) {
-            'yes' {
-				Write-Tell "Default parameters selected."
-                return $true
+        Write-ActionLine "Available Backtest Configs:"
+        $menuMap = @{}
+        $index = 1
+
+        foreach ($config in $configs) {
+            $configName = $config.Name
+            $configNumber = ([regex]::Match($config.Name, 'config-(\d+)\.json')).Groups[1].Value
+            $containerName = "Backtest_$configNumber"            
+            Write-InfoLine "$index. $containerName with $configName"
+            $menuMap["$index"] = @{
+                ContainerName = $containerName
+                ConfigFile    = "$configFolder/$configName"
             }
-            'no' {
-                Write-Tell "Custom parameters selected."
-                return $false
-            }
-            default {
-                Write-ErrorLine "Invalid input. Please enter 'Yes' or 'No'."
-            }
+            $index++
+        }
+
+        $choice = Read-Host "Enter your choice (1-$($configs.Count))"
+        if ($menuMap.ContainsKey($choice)) {
+            return $menuMap[$choice]
+        } else {
+            Write-ErrorLine "Invalid input. Please enter a number between 1 and $($configs.Count)."
         }
     } while ($true)
 }
@@ -61,22 +74,6 @@ function Get-Timerange {
     } while ($true)
 }
 
-# Improved Get-Timeframe function with nicer user interaction
-function Get-Timeframe {
-    $allowedTimeframes = @('1m', '5m', '15m', '1h', '4h', '1d')
-    do {
-        Write-ActionLine "Enter one of the Timeframe (e.g. $($allowedTimeframes -join ', '))"
-        $input = Read-Host
-        $timeframe = $input.ToLower()
-        if ($allowedTimeframes -contains $timeframe) {
-            Write-WarningLine "You've selected the timeframe: $timeframe"
-            return $timeframe
-        } else {
-            Write-ErrorLine "Invalid input. The timeframe must be one of the following: $($allowedTimeframes -join ', '). Ensure to use lowercase letters."
-        }
-    } while ($true)
-}
-
 # Get-CacheOption function
 function Get-CacheOption {
     do {
@@ -87,13 +84,20 @@ function Get-CacheOption {
                 Write-WarningLine "Cache will be enabled."
                 return $true
             }
+            'y' {
+                Write-Host "Cache will be enabled."
+                return $true
+            }
             'no' {
                 Write-Tell "Cache will be disabled."
                 return $false
             }
-
+            'n' {
+                Write-Host "Cache will be disabled."
+                return $false
+            }
             default {
-                Write-ErrorLine "Invalid input. Please enter 'Yes' or 'No'."
+                Write-ErrorLine "Invalid input. Please enter 'Yes'/'Y'or 'No'/'N'."
             }
         }
     } while ($true)
@@ -109,12 +113,20 @@ function Get-DisableMaxMarketPositionsOption {
                 Write-Tell "Max open trades will be disabled."
                 return $true
             }
+            'y' {
+                Write-Host "Max open trades will be disabled."
+                return $true
+            }
             'no' {
                 Write-WarningLine "Max open trades will remain enabled."
                 return $false
             }
+            'n' {
+                Write-Host "Max open trades will remain enabled."
+                return $false
+            }
             default {
-                Write-ErrorLine "Invalid input. Please enter 'Yes' or 'No'."
+                Write-ErrorLine "Invalid input. Please enter 'Yes'/'Y'or 'No'/'N'."
             }
         }
     } while ($true)
@@ -130,86 +142,112 @@ function Get-EnablePositionStackingOption {
                 Write-Tell "Position stacking will be enabled."
                 return $true
             }
+            'y' {
+                Write-Host "Position stacking will be enabled."
+                return $true
+            }
             'no' {
                 Write-WarningLine "Position stacking will remain disabled."
                 return $false
             }
+            'n' {
+                Write-Host "Position stacking will remain disabled."
+                return $false
+            }
             default {
-                Write-ErrorLine "Invalid input. Please enter 'Yes' or 'No'."
+                Write-ErrorLine "Invalid input. Please enter 'Yes'/'Y'or 'No'/'N'."
             }
         }
     } while ($true)
 }
 
-# Main script execution
-$useDefaultParameters = ChooseParameterMode
-if ($useDefaultParameters) {
+# MAIN SCRIPT START
+
+# Force manual config selection — always ask user
+$backtest = Select-BacktestOrder
+
+if ($backtest) {
+    # Extract config number from filename (e.g., config-3.json → 3)
+    $configNumber = ([regex]::Match($backtest.ConfigFile, 'config-(\d+)\.json')).Groups[1].Value
+    $containerName = "Backtest_$configNumber"
+    $configFile = $backtest.ConfigFile
     $timerange = $defaultTimerange
-    $timeframe = $defaultTimeframe
     $useCache = $defaultUseCache
-    $disableMaxMarketPositions = $defaultDisableMaxMarketPositions
-    $enablePositionStacking = $defaultEnablePositionStacking
+    # Optional toggles can be uncommented when needed
+    #$disableMaxMarketPositions = Get-DisableMaxMarketPositionsOption
+    #$enablePositionStacking = Get-EnablePositionStackingOption
+
+    Write-InfoLine "Selected Container: $containerName"
+    Write-InfoLine "Config File: $configFile"
 } else {
-    $timerange = Get-Timerange
-    $timeframe = Get-Timeframe
-    $useCache = Get-CacheOption
-    $disableMaxMarketPositions = Get-DisableMaxMarketPositionsOption
-    $enablePositionStacking = Get-EnablePositionStackingOption
+    Write-ErrorLine "No backtest option selected. Exiting..."
+    return
 }
 
-# Define the Docker command as a script block
+# Define the Docker command as a script block #$timeframe,
 $dockerCommand = {
-    param($timerange, $timeframe, $useCache, $disableMaxMarketPositions, $enablePositionStacking)
-    cd 'M:\Freqtrade\'
+    param($containerName,$timerange, $useCache, $disableMaxMarketPositions, $enablePositionStacking, $configFile)
+    cd 'K:\Freqtrade\'
 
-    # Construct the Docker command with or without the cache option
+    # Construct the Docker command with or without the cache option # --timeframe $timeframe
     $cacheOption = if ($useCache) { "" } else { "--cache none" }
     $maxMarketPositionsOption = if ($disableMaxMarketPositions) { "--disable-max-market-positions" } else { "" }
     $positionStackingOption = if ($enablePositionStacking) { "--enable-position-stacking" } else { "" }
 
-    $cmd = "docker-compose run --name Backtest --rm freqtrade backtesting --config user_data/config.json --data-format-ohlcv feather --export trades --timerange $timerange --timeframe $timeframe $cacheOption $maxMarketPositionsOption $positionStackingOption"
+    $cmd = "docker-compose run --name $containerName --rm freqtrade backtesting --config $configFile --data-format-ohlcv feather --export trades --timerange $timerange $cacheOption $maxMarketPositionsOption $positionStackingOption"
     
     Write-ActionLine "Running command: $cmd"
     Invoke-Expression $cmd
 }
 
-# Initially run the Docker command
-& $dockerCommand -timerange $timerange -timeframe $timeframe -useCache $useCache -disableMaxMarketPositions $disableMaxMarketPositions -enablePositionStacking $enablePositionStacking
+# Initially run the Docker command #-timeframe $timeframe
+& $dockerCommand -containerName $containerName -timerange $timerange -useCache $useCache -disableMaxMarketPositions $disableMaxMarketPositions -enablePositionStacking $enablePositionStacking -configFile $configFile
 
 # User input loop
 $exitLoop = $false
 do {
-    Write-ActionLine "Type 'retry' to use same parameters, 'new' to enter new parameters, or 'exit' to close this window"
-    $input = Read-Host
+    Write-ActionLine "Select 'retry' (r), 'new' (n), 'exit' (e)"
+    $input = (Read-Host).ToLower()
+
     switch ($input) {
-        'retry' {
+        'retry' { }
+        'r'     {
             Write-Tell "Retrying with the same parameters..."
-            & $dockerCommand -timerange $timerange -timeframe $timeframe -useCache $useCache -disableMaxMarketPositions $disableMaxMarketPositions -enablePositionStacking $enablePositionStacking
+            & $dockerCommand -containerName $containerName -timerange $timerange -useCache $useCache -disableMaxMarketPositions $disableMaxMarketPositions -enablePositionStacking $enablePositionStacking -configFile $configFile
         }
-        'new' {
-            $useDefaultParameters = ChooseParameterMode
-            if ($useDefaultParameters) {
+        'new' { }
+        'n' {
+            # Manually select backtest config
+            $backtest = Select-BacktestOrder
+            if ($backtest) {
+                # Extract config number from filename (e.g., config-3.json → 3)
+                $configNumber = ([regex]::Match($backtest.ConfigFile, 'config-(\d+)\.json')).Groups[1].Value
+                $containerName = "Backtest_$configNumber"
+                $configFile = $backtest.ConfigFile
                 $timerange = $defaultTimerange
-                $timeframe = $defaultTimeframe
                 $useCache = $defaultUseCache
-                $disableMaxMarketPositions = $defaultDisableMaxMarketPositions
-                $enablePositionStacking = $defaultEnablePositionStacking
+
+                # Optional: if you still want to allow manual input for these
+                # $disableMaxMarketPositions = Get-DisableMaxMarketPositionsOption
+                # $enablePositionStacking = Get-EnablePositionStackingOption
+
+                Write-InfoLine "Selected Container: $containerName"
+                Write-InfoLine "Config File: $configFile"
             } else {
-                $timerange = Get-Timerange
-                $timeframe = Get-Timeframe
-                $useCache = Get-CacheOption
-                $disableMaxMarketPositions = Get-DisableMaxMarketPositionsOption
-                $enablePositionStacking = Get-EnablePositionStackingOption
+                Write-ErrorLine "No backtest option selected. Exiting..."
+                return
             }
-            Write-WarningLine "Running command with new parameters..."
-            & $dockerCommand -timerange $timerange -timeframe $timeframe -useCache $useCache -disableMaxMarketPositions $disableMaxMarketPositions -enablePositionStacking $enablePositionStacking
+
+            Write-WarningLine "Running command with selected parameters..."
+            & $dockerCommand -containerName $containerName -timerange $timerange -useCache $useCache -disableMaxMarketPositions $disableMaxMarketPositions -enablePositionStacking $enablePositionStacking -configFile $configFile
         }
-        'exit' {
+        'exit' { }
+        'e'    {
             Write-InfoLine "Exiting..."
             $exitLoop = $true
         }
         default {
-            Write-ErrorLine "Invalid input. Please type 'retry', 'new', or 'exit'."
+            Write-ErrorLine "Invalid input. Select 'retry' (r), 'new' (n), or 'exit' (e)."
         }
     }
 } while (-not $exitLoop)
