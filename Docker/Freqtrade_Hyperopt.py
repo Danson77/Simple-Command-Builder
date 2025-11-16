@@ -39,21 +39,18 @@ def write_tell(msg: str):
 # =====================================================================================
 # Config / path constants
 # =====================================================================================
-EXPECTED_PATH = r"K:\Freqtrade"
-CONFIG_FOLDER = "user_data"
-HYPEROPTS_FOLDER = r"K:\Freqtrade\user_data\hyperopts"
+PROJECT_ROOT = r"K:\Freqtrade"
+CONFIG_FOLDER = "user_data"  # relative (as seen inside container)
+HYPEROPTS_FOLDER = os.path.join(PROJECT_ROOT, "user_data", "hyperopts")
 
 
-# =====================================================================================
-# Helper: ensure working directory
-# =====================================================================================
 def ensure_working_directory():
-    if os.getcwd() != EXPECTED_PATH:
-        write_warning_line(f"Switching to expected working directory: {EXPECTED_PATH}")
+    if os.getcwd().lower() != PROJECT_ROOT.lower():
+        write_warning_line(f"Switching to expected working directory: {PROJECT_ROOT}")
         try:
-            os.chdir(EXPECTED_PATH)
+            os.chdir(PROJECT_ROOT)
         except Exception as e:
-            write_error_line(f"Failed to change directory to {EXPECTED_PATH}. {e}")
+            write_error_line(f"Failed to change directory to {PROJECT_ROOT}. {e}")
             sys.exit(1)
 
 
@@ -61,19 +58,23 @@ def ensure_working_directory():
 # Function to choose a backtest config
 # =====================================================================================
 def get_config_file() -> str:
+    """
+    Returns a RELATIVE path like 'user_data/config-1.json'
+    so it works inside the Docker container.
+    """
     ensure_working_directory()
 
-    config_folder_path = os.path.join(EXPECTED_PATH, CONFIG_FOLDER)
+    config_folder_path = os.path.join(PROJECT_ROOT, CONFIG_FOLDER)
     if not os.path.isdir(config_folder_path):
         write_error_line(
-            f"Directory '{CONFIG_FOLDER}' does not exist. Current path: {os.getcwd()}"
+            f"Directory '{config_folder_path}' does not exist. Current path: {os.getcwd()}"
         )
         sys.exit(1)
 
     pattern = os.path.join(config_folder_path, "config-*.json")
     configs = sorted(glob.glob(pattern))
     if not configs:
-        write_error_line(f"No config-*.json files found in '{CONFIG_FOLDER}'.")
+        write_error_line(f"No config-*.json files found in '{config_folder_path}'.")
         sys.exit(1)
 
     while True:
@@ -87,9 +88,15 @@ def get_config_file() -> str:
         if choice.isdigit():
             index = int(choice)
             if 1 <= index <= len(configs):
-                return configs[index - 1]
+                chosen_abs = configs[index - 1]
+                config_name = os.path.basename(chosen_abs)
+                # THIS is what the container sees:
+                config_rel = f"{CONFIG_FOLDER}/{config_name}"  # e.g. "user_data/config-1.json"
+                return config_rel
 
-        write_error_line(f"Invalid input. Please enter a number between 1 and {len(configs)}.")
+        write_error_line(
+            f"Invalid input. Please enter a number between 1 and {len(configs)}."
+        )
 
 
 # =====================================================================================
@@ -139,7 +146,6 @@ def get_spaces() -> str:
             continue
 
         if all(s in valid_spaces for s in space_list):
-            # Return as original string (joined by single space)
             return " ".join(space_list)
         else:
             write_error_line(
@@ -226,7 +232,7 @@ def get_hyperopt_loss() -> str:
 # =====================================================================================
 # Function to get the custom hyperopt loss class name from Python files
 # =====================================================================================
-def get_custom_hyperopt_loss(folder_path: str) -> str | None:
+def get_custom_hyperopt_loss(folder_path: str):
     write_action_line("Available custom hyperopt loss files:")
 
     pattern = os.path.join(folder_path, "*.py")
@@ -264,7 +270,6 @@ def get_custom_hyperopt_loss(folder_path: str) -> str | None:
         write_error_line(f"Failed to read {chosen_file}: {e}")
         return None
 
-    # Regex to find class XXX(IHyperOptLoss):
     m = re.search(
         r"class\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(IHyperOptLoss\):",
         content,
@@ -292,7 +297,6 @@ def run_docker_command(
 ):
     ensure_working_directory()
 
-    # Build docker command as list (safer), but print it as a single string
     spaces_list = [s for s in spaces.split() if s]
 
     cmd = [
@@ -304,7 +308,7 @@ def run_docker_command(
         "freqtrade",
         "hyperopt",
         "--config",
-        config_file,
+        config_file,  # e.g. "user_data/config-1.json"
         "--data-format-ohlcv",
         "feather",
         "--random-state",
@@ -335,7 +339,6 @@ def run_docker_command(
 def main():
     ensure_working_directory()
 
-    # Initial prompts
     timerange = get_timerange()
     config_file = get_config_file()
     spaces = get_spaces()
@@ -353,10 +356,8 @@ def main():
             )
             sys.exit(1)
 
-    # Initial run
     run_docker_command(timerange, spaces, epochs, workers, hyperopt_loss, config_file)
 
-    # Loop for user input
     while True:
         write_action_line(
             "Type 'retry' (or 'r') to use same parameters, "
@@ -365,7 +366,6 @@ def main():
         )
         user_input = input().strip().lower()
 
-        # Normalize long commands to short ones
         if user_input == "retry":
             user_input = "r"
         elif user_input == "new":
@@ -380,7 +380,6 @@ def main():
             )
 
         elif user_input == "n":
-            # Prompt user again for all values
             timerange = get_timerange()
             config_file = get_config_file()
             spaces = get_spaces()
